@@ -20,12 +20,12 @@ ocm list clusters --columns 'id,state' --managed --no-headers | while read -r id
     continue
   fi
   
-  if ocm list addons --cluster "$id" | grep 'managed-api-service-internal' | grep -q 'ready'; then
+  if ocm list addons --cluster "$id" | grep 'managed-api-service' | grep -q 'ready'; then
     
     cluster_details=$(ocm describe cluster "$id")
     cluster_name=$(echo "$cluster_details" | grep '^Name:' | awk '{$1=""; print $0}' | xargs)
     ocp_version=$(echo "$cluster_details" | grep 'Version:' | awk '{$1=""; print $0}' | xargs)
-    addon_version=$(ocm get "/api/clusters_mgmt/v1/clusters/$id/addons" | jq -r '.items[] | select(.id == "managed-api-service-internal") | .addon_version.id')
+    addon_version=$(ocm get "/api/clusters_mgmt/v1/clusters/$id/addons" | jq -r '.items[] | select(.id == "managed-api-service") | .addon_version.id')
 
     printf "%-35s %-25s %-15s %-20s\n" "$id" "$cluster_name" "$ocp_version" "$addon_version"
   fi
