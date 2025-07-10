@@ -20,7 +20,8 @@ ocm list clusters --columns 'id,state' --managed --no-headers | while read -r id
     continue
   fi
   
-  if ocm list addons --cluster "$id" | grep 'managed-api-service' | grep -q 'ready'; then
+  addon_status=$(ocm list addons --cluster "$id" | grep -w 'managed-api-service') 
+  if [ -n "$addon_status" ] && ! echo "$addon_status" | grep -qE 'not installed|uninstalled'; then
     
     cluster_details=$(ocm describe cluster "$id")
     cluster_name=$(echo "$cluster_details" | grep '^Name:' | awk '{$1=""; print $0}' | xargs)
